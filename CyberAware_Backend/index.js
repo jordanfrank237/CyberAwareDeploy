@@ -1,18 +1,12 @@
-// ==================== DÉBUT DU CODE COMPLET À COPIER ====================
+// ==================== DÉBUT DU NOUVEAU CODE COMPLET ====================
 
 const express = require('express');
 const cors = require('cors');
-const OpenAI = require('openai'); // On déclare l'outil OpenAI
+const fetch = require('node-fetch'); // On ajoute un outil pour faire des requêtes
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-
-// On initialise le client OpenAI UNE SEULE FOIS avec la clé API
-// Il va automatiquement chercher la variable d'environnement OPENAI_API_KEY
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
 
 // Route pour vérifier que le serveur est en ligne
 app.get('/api/health', (req, res) => {
@@ -27,34 +21,40 @@ app.post('/api/chat', async (req, res) => {
         return res.status(400).json({ reply: "Veuillez entrer une question." });
     }
 
-    const systemMessage = {
-        role: 'system',
-        content: `
-        Tu es CyberBot, un expert en cybersécurité et un assistant pédagogique pour la plateforme CyberAware.
-        Ta mission est d'aider les utilisateurs avec bienveillance et précision.
-        - Réponds de manière claire, simple et encourageante en français.
-        - Tes connaissances couvrent tous les domaines de la cybersécurité : mots de passe, phishing, malwares, sécurité des réseaux, protection des données, ingénierie sociale, etc.
-        - Donne des exemples concrets pour illustrer tes propos.
-        - Si une question est hors du champ de la cybersécurité, décline poliment en rappelant ton rôle d'expert en cybersécurité.
-        - Si tu ne connais pas la réponse, dis-le honnêtement et conseille de consulter des sources fiables.
-        `
-    };
-
-    const userMessage = { role: 'user', content: message };
+    // Le "prompt système" pour guider l'IA gratuite
+    const systemPrompt = `
+    Tu es CyberBot, un expert en cybersécurité et un assistant pour la plateforme CyberAware.
+    Ta mission est d'aider les utilisateurs en français.
+    Réponds de manière claire et factuelle aux questions sur la cybersécurité.
+    Si une question est hors du champ de la cybersécurité, décline poliment.
+    Question de l'utilisateur : "${message}"
+    Ta réponse :
+    `;
 
     try {
-        const completion = await openai.chat.completions.create({
-            model: "gpt-3.5-turbo",
-            messages: [systemMessage, userMessage],
-            temperature: 0.7,
-        });
+        // On appelle l'API gratuite
+        const apiResponse = await fetch(
+            "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2",
+            {
+                headers: { "Content-Type": "application/json" },
+                method: "POST",
+                body: JSON.stringify({
+                    "inputs": systemPrompt,
+                    "parameters": { "max_new_tokens": 250 } // Limite la longueur de la réponse
+                } ),
+            }
+        );
 
-        const botResponse = completion.choices[0].message.content;
-        res.json({ reply: botResponse });
+        const result = await apiResponse.json();
+
+        // On extrait la réponse du résultat
+        const botResponse = result[0].generated_text.split("Ta réponse :")[1] || "Je ne suis pas sûr de savoir comment répondre à cela. Peux-tu reformuler ?";
+        
+        res.json({ reply: botResponse.trim() });
 
     } catch (error) {
-        console.error("Erreur lors de l'appel à l'API OpenAI:", error);
-        res.status(500).json({ reply: "Désolé, je rencontre des difficultés techniques pour me connecter à mon intelligence. Veuillez vérifier que la clé API est correctement configurée et réessayer." });
+        console.error("Erreur lors de l'appel à l'API gratuite:", error);
+        res.status(500).json({ reply: "Désolé, le service de chatbot gratuit est momentanément indisponible. Veuillez réessayer plus tard." });
     }
 });
 
@@ -63,4 +63,4 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-// ==================== FIN DU CODE COMPLET À COPIER ====================
+// ==================== FIN DU NOUVEAU CODE COMPLET ====================
