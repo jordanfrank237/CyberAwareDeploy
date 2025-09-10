@@ -1,9 +1,9 @@
-// ==================== DÉBUT DU NOUVEAU CODE COMPLET ====================
+// ==================== DÉBUT DU CODE FINAL ET ROBUSTE ====================
 
 const express = require('express');
 const cors = require('cors');
+// On utilise la syntaxe de compatibilité pour node-fetch
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
-
 
 const app = express();
 app.use(cors());
@@ -22,7 +22,6 @@ app.post('/api/chat', async (req, res) => {
         return res.status(400).json({ reply: "Veuillez entrer une question." });
     }
 
-    // Le "prompt système" pour guider l'IA gratuite
     const systemPrompt = `
     Tu es CyberBot, un expert en cybersécurité et un assistant pour la plateforme CyberAware.
     Ta mission est d'aider les utilisateurs en français.
@@ -33,7 +32,6 @@ app.post('/api/chat', async (req, res) => {
     `;
 
     try {
-        // On appelle l'API gratuite
         const apiResponse = await fetch(
             "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2",
             {
@@ -41,21 +39,28 @@ app.post('/api/chat', async (req, res) => {
                 method: "POST",
                 body: JSON.stringify({
                     "inputs": systemPrompt,
-                    "parameters": { "max_new_tokens": 250 } // Limite la longueur de la réponse
+                    "parameters": { "max_new_tokens": 250 }
                 } ),
             }
         );
 
         const result = await apiResponse.json();
 
-        // On extrait la réponse du résultat
-        const botResponse = result[0].generated_text.split("Ta réponse :")[1] || "Je ne suis pas sûr de savoir comment répondre à cela. Peux-tu reformuler ?";
-        
-        res.json({ reply: botResponse.trim() });
+        // ==================== LA CORRECTION EST ICI ====================
+        // On vérifie si la réponse contient bien le texte généré AVANT de l'utiliser
+        if (result && result[0] && result[0].generated_text) {
+            const botResponse = result[0].generated_text.split("Ta réponse :")[1] || "J'ai reçu une réponse mais je n'ai pas pu l'interpréter. Essayez de reformuler.";
+            res.json({ reply: botResponse.trim() });
+        } else {
+            // Si l'API renvoie une erreur (ex: modèle en chargement), on gère le cas
+            console.error("Réponse inattendue de l'API:", result);
+            res.status(503).json({ reply: "Le service de chatbot est actuellement en cours de démarrage ou de maintenance. Veuillez patienter une minute et réessayer." });
+        }
+        // ==================== FIN DE LA CORRECTION ====================
 
     } catch (error) {
         console.error("Erreur lors de l'appel à l'API gratuite:", error);
-        res.status(500).json({ reply: "Désolé, le service de chatbot gratuit est momentanément indisponible. Veuillez réessayer plus tard." });
+        res.status(500).json({ reply: "Désolé, une erreur technique est survenue. Le service de chatbot est peut-être indisponible." });
     }
 });
 
@@ -64,4 +69,4 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-// ==================== FIN DU NOUVEAU CODE COMPLET ====================
+// ==================== FIN DU CODE FINAL ET ROBUSTE ====================
