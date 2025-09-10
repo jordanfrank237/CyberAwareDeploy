@@ -85,8 +85,28 @@ const HomePage = ({ onNavigate }) => {
         color: '#64748b',
         fontSize: '0.9rem'
       }}>
-        <span>Mentions Légales</span>
-        <span>Contact</span>
+        <span>Mentions Légales
+          // Contenu pour la page des mentions légales
+<div>
+    <h1>Mentions Légales</h1>
+    <h2>Éditeur du site</h2>
+    <p>Frank (Jordan), étudiant et créateur de la plateforme CyberAware.</p>
+    <h2>Contact</h2>
+    <p>Email : tsakemfrank3@gmail.com</p>
+    <p>Téléphone : +33 7 74 79 84 59</p>
+    <h2>Hébergement</h2>
+    <p>Ce site est hébergé par Netlify, Inc., situé au 2325 3rd Street, Suite 296, San Francisco, California 94107.</p>
+    <h2>Propriété intellectuelle</h2>
+    <p>Le contenu de ce site, incluant les textes, images et modules de formation, est la propriété exclusive de son créateur. Toute reproduction est interdite sans autorisation.</p>
+    <h2>Protection des données</h2>
+    <p>Ce site a pour unique but la sensibilisation à la cybersécurité. Les données de progression sont stockées localement sur le navigateur de l'utilisateur et ne sont pas collectées, sauf dans le cadre d'un futur système de comptes sécurisé.</p>
+</div>
+
+        </span>
+        <span>Contact 
+          Téléphone : +33 7 74 79 84 59
+          Email : tsakemfrank3@gmail.com
+        </span>
         <span>À propos</span>
       </div>
     </div>
