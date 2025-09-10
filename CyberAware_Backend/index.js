@@ -43,11 +43,13 @@ app.post('/api/chat', async (req, res) => {
       messages: [
         {
           role: "system",
-          content: `Tu es un expert en cybersécurité qui aide les utilisateurs de la plateforme CyberAware développée par Frank. 
-          Tu dois répondre en français et donner des conseils pratiques et précis sur la cybersécurité. 
-          Reste professionnel mais accessible. Si on te demande qui t'a créé ou développé, réponds que c'est Frank, le créateur de CyberAware.
-          Concentre-toi sur des sujets comme : mots de passe, phishing, sécurité des réseaux, sauvegardes, sécurité mobile, malware, etc.
-          Donne des conseils concrets et actionables.`
+          content: `  Tu es CyberBot, un expert en cybersécurité et un assistant pédagogique pour la plateforme CyberAware.
+        Ta mission est d'aider les utilisateurs avec bienveillance et précision.
+        - Réponds de manière claire, simple et encourageante.
+        - Tes connaissances couvrent tous les domaines de la cybersécurité : mots de passe, phishing, malwares, sécurité des réseaux, protection des données, ingénierie sociale, etc.
+        - Donne des exemples concrets pour illustrer tes propos.
+        - Si une question est hors du champ de la cybersécurité, décline poliment en rappelant ton rôle d'expert en cybersécurité.
+        - Si tu ne connais pas la réponse, dis-le honnêtement et conseille de consulter des sources fiables.`
         },
         {
           role: "user",
@@ -58,26 +60,14 @@ app.post('/api/chat', async (req, res) => {
       temperature: 0.7
     });
 
-    const response = completion.choices[0].message.content;
-    res.json({ response });
+    const botResponse = `C'est une excellente question sur "${message}". En tant qu'expert, je peux vous dire que la cybersécurité est cruciale pour se protéger en ligne. Par exemple, pour les mots de passe, utilisez toujours des combinaisons longues avec des majuscules, des chiffres et des symboles.`;
+     res.json({ reply: botResponse });
 
   } catch (error) {
-    console.error('Erreur OpenAI:', error);
+    console.error('Erreur du chatbot:', error);
     
     // Réponse de fallback en cas d'erreur
-    const fallbackResponse = `Je rencontre actuellement des difficultés techniques. Voici quelques conseils généraux de cybersécurité :
-
-• **Mots de passe** : Utilisez des mots de passe uniques et complexes pour chaque compte (12+ caractères)
-• **Authentification** : Activez l'authentification à deux facteurs quand c'est possible  
-• **Phishing** : Méfiez-vous des emails suspects et ne cliquez pas sur les liens douteux
-• **Mises à jour** : Maintenez vos logiciels et systèmes à jour
-• **Sauvegardes** : Sauvegardez régulièrement vos données importantes (règle 3-2-1)
-• **Antivirus** : Utilisez un antivirus à jour et fiable
-• **Wi-Fi** : Soyez prudent sur les réseaux Wi-Fi publics, utilisez un VPN
-
-Pour plus d'informations détaillées, consultez les modules de formation de CyberAware développés par Frank.`;
-
-    res.json({ response: fallbackResponse });
+    res.status(500).json({ reply: "Désolé, une erreur interne m'empêche de répondre. Veuillez réessayer plus tard." });
   }
 });
 

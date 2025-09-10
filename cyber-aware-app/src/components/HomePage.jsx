@@ -103,7 +103,8 @@ const HomePage = ({ onNavigate }) => {
 </div>
 
         </span>
-        <span>Contact 
+        <span>
+          Contact 
           Téléphone : +33 7 74 79 84 59
           Email : tsakemfrank3@gmail.com
         </span>

@@ -120,7 +120,7 @@ const Dashboard = ({ user, progress, onNavigate, onLogout }) => {
             fontSize: '1.1rem'
           }}
         >
-          💬 Commencer votre formation
+          Chatbot 💬 
         </button>
         
         <div style={{ marginTop: '1rem' }}>
