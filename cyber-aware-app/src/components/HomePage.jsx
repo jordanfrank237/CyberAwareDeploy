@@ -86,7 +86,6 @@ const HomePage = ({ onNavigate }) => {
         fontSize: '0.9rem'
       }}>
         <span>Mentions Légales
-          // Contenu pour la page des mentions légales
 <div>
     <h1>Mentions Légales</h1>
     <h2>Éditeur du site</h2>
