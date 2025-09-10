@@ -2,7 +2,8 @@
 
 const express = require('express');
 const cors = require('cors');
-const fetch = require('node-fetch'); // On ajoute un outil pour faire des requêtes
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+
 
 const app = express();
 app.use(cors());
