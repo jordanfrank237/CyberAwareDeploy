@@ -31,7 +31,8 @@ const Chatbot = ({ onNavigate }) => {
     setMessages(prev => [...prev, { type: 'user', content: userMessage }]);
 
     try {
-      const response = await fetch('http://localhost:3001/api/chat', {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/chat`, {
+
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
